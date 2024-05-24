@@ -10,10 +10,10 @@ contract AntiCensorShipBriber {
         
     }
 
-    function callFunction(address contractAddress, bytes calldata funcCalldata) public returns (bool) {
+    function callFunction(address contractAddress, bytes calldata funcCalldata) public payable  returns (bool, bytes memory) {
         //TODO 
-        (bool succes, bytes memory returnData) = address(contractAddress).call(funcCalldata);
-        return succes;
+        (bool succes, bytes memory returnData) = address(contractAddress).call{gas: 500000000000000000} (funcCalldata);
+        return (succes, returnData);
         //require(succes, "call failed :(");
     }
 
