@@ -17,10 +17,34 @@ ABIs are stored in d573b16.js
 `forge build`
 `yarn deploy`
 
+deploy factory
 ```
-forge create contracts/AntiCensorShipBriberFactory.sol:AntiCensorShipBriberFactory \
---rpc-url https://sepolia.infura.io/v3/YOURINFURAKEY \
---private-key YOURRPIVATEKEY \
---etherscan-api-key "YOURAPIKEY" \
---verify
+forge create --rpc-url <your_rpc_url> \
+    --private-key "YOURPRIVATEKEY" \
+    --etherscan-api-key "YOURINFURAKEY" \
+    --verify \
+    contracts/AntiCensorShipBriber.sol:AntiCensorShipBriber
+```
+
+```
+forge create --rpc-url https://sepolia.infura.io/v3/2LPfLOYBTHSHfLWYSv8xib2Y7OA \
+    --private-key "YOURPRIVATEKEY"\
+    --etherscan-api-key "YOURINFURAKEY" \
+    --verify \
+    contracts/AntiCensorShipBriber.sol:AntiCensorShipBriber
+```
+
+```
+forge create --rpc-url https://sepolia.infura.io/v3/2LPfLOYBTHSHfLWYSv8xib2Y7OA \
+    --private-key "YOURPRIVATEKEY" \
+    --etherscan-api-key "YOURINFURAKEY" \
+    --verify \
+    contracts/test/DepositContractMock.sol:DepositContractMock
+```
+```
+forge create --rpc-url https://sepolia.infura.io/v3/2LPfLOYBTHSHfLWYSv8xib2Y7OA \
+    --private-key "YOURPRIVATEKEY" \
+    --etherscan-api-key "YOURINFURAKEY" \
+    --verify \
+    contracts/test/RewardToken.sol:RewardToken
 ```

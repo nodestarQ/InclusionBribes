@@ -4,6 +4,10 @@ import {default as AntiCensorShipBriberFoundryData} from "../out/AntiCensorShipB
 const AntiCensorShipBriberFactoryAbi = AntiCensorShipBriberFoundryData.abi
 const AntiCensorShipBriberFactoryAddress = "0x9b147f9889308a1F98E5621EfAD12fB2d85cb1eE"
 
+import {default as DepositContractMockFoundryData} from "../out/DepositContractMock.sol/DepositContractMock.json"
+const DepositContractMockAbi = DepositContractMockFoundryData.abi
+console.log(getFunctionSelectors(DepositContractMockAbi))
+
 
 /**
  * 
@@ -28,6 +32,18 @@ async function getSigner(provider) {
         console.warn(error)
         return false
       }
+    }
+    function getFunctionSelectors(abi) {
+      const iface = new ethers.Interface(abi)
+      const selectors = {}
+      for (const item of abi) {
+        if (item.type === "function") {
+          selectors[item.name] = iface.getFunction(item.name).selector
+
+        }
+
+      }
+      return selectors
     }
   
   
@@ -62,7 +78,7 @@ async function getSigner(provider) {
   async function deployButtonHandler() {
     const {signer, provider, AntiCensorShipBriberContractSigner} = await connectWallet()
     const contractAddress = document.getElementById("contractAddress").value
-    const funcSelectors = JSON.parse(document.getElementById("funcSelectors").value)
+    const funcSelectors = JSON.parse(document.getElementById("funcSelectorsTextInput").value)
     const rewardTokenAddress = document.getElementById("rewardTokenAddress").value
     const rewardPerCall =  Number(document.getElementById("rewardPerCall").value)
 
@@ -77,12 +93,68 @@ async function getSigner(provider) {
 
   }
 
+  async function getAbi(contractAddress) {
+    //TODO make configurable sepolia/mainnet
+    console.log(`https://api-sepolia.etherscan.io/api?module=contract&action=getabi&address=${contractAddress}&apikey=ZEMX5KWUEYW5UAYAAGEWY2EY5YX3YXPJZS`)
+    const r = await fetch(`https://api-sepolia.etherscan.io/api?module=contract&action=getabi&address=${contractAddress}&apikey=ZEMX5KWUEYW5UAYAAGEWY2EY5YX3YXPJZS`)
+    const rjson = await r.json()
+    console.log(rjson)
+    const abi = rjson.result
+    console.log(abi)
+    if (abi !== 'Contract source code not verified') {
+      console.log(JSON.parse(abi))
+    } else {
+      console.warn('Contract source code not verified. using hardcoded abi')
+      return DepositContractMockAbi
+    }
+    
+  }
+
+  async function submitContractAddressHandler(event) {
+    if (event.key === "Enter") {
+      const contractAddress = ethers.getAddress(document.getElementById("contractAddress").value)
+      const abi = await getAbi(contractAddress)
+      const funcSelectors =  getFunctionSelectors(abi)
+
+      const funcSelectorsListEl = document.getElementById("functionSelectors")
+      for (const functionName of Object.keys(funcSelectors)) {
+        const option = document.createElement("option")
+        option.value = funcSelectors[functionName]
+        option.innerText = functionName
+        funcSelectorsListEl.append(option)
+      }
+
+
+      
+    }
+
+  }
+  
+  function functionSelectorsSelectorHandler() {
+    const funcSelectorsTextInput = document.getElementById("funcSelectorsTextInput")
+    const currentSelectors = JSON.parse(funcSelectorsTextInput.value)
+    console.log(currentSelectors)
+    const functionSelectorsSelector = document.getElementById("functionSelectors")
+    currentSelectors.push(functionSelectorsSelector.value)
+    funcSelectorsTextInput.value = JSON.stringify(currentSelectors)
+    functionSelectorsSelector.value = ""
+     
+  }
+
+
+
   function setEventListeners() {
     const connectWalletBtn = document.getElementById("connectWalletBtn")
     connectWalletBtn.addEventListener("click",async (event)=>await connectWalletHandler())
 
     const deployButton = document.getElementById("deployButton")
     deployButton.addEventListener("click", () => deployButtonHandler())
+
+    const contractAddress = document.getElementById("contractAddress")
+    contractAddress.addEventListener("keyup", async (event)=>await submitContractAddressHandler(event))
+
+    const functionSelectorsSelector = document.getElementById("functionSelectors")
+    functionSelectorsSelector.addEventListener("change", ()=>functionSelectorsSelectorHandler())
 
   }
 
