@@ -1,18 +1,13 @@
 // SPDX-License-Identifier: MIT
 
+pragma solidity ^0.8.26;
+
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import {IERC20, SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-pragma solidity ^0.8.26;
+import {IAntiCensorShipBriber, PendingCalldata } from "./interfaces/IAntiCensorShipBriber.sol";
 
-struct PendingCalldata {
-    bytes funcCalldata;
-    uint256 value;
-    uint32 gasLimit;
-    bytes32 salt;
-}
-
-contract AntiCensorShipBriber is Initializable {
+contract AntiCensorShipBriber is IAntiCensorShipBriber, Initializable {
 
     address public  censoredContractAddress;
 
@@ -38,7 +33,7 @@ contract AntiCensorShipBriber is Initializable {
 
     //TODO check gaslimit data type
     //TODO can salt be smaller
-    function callFunction(bytes calldata _funcCalldata, uint32 gasLimit, bytes32 salt ) public payable {
+    function callFunction(bytes calldata _funcCalldata, uint32 gasLimit, bytes32 salt ) override public payable {
         //check contract and function selector
         require(eligibleFuncSelectors[bytes4(_funcCalldata[:4])], "function in call data is not eligible");
 
@@ -58,7 +53,7 @@ contract AntiCensorShipBriber is Initializable {
 
 
 
-    function sweepReward(bytes32 pendingCallDataHash) public {
+    function sweepReward(bytes32 pendingCallDataHash) override public {
         require(pendingCallDataBools[pendingCallDataHash]);
         pendingCallDataBools[pendingCallDataHash] = false;
         PendingCalldata memory pendingCallData = pendingCallDataStorage[pendingCallDataHash];
