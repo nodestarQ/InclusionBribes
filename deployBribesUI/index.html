@@ -1,19 +1,23 @@
 <!DOCTYPE html>
+
 <head>
   <style>
     .outer {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-    }
-    .inner {
-        width: 45%;
-        border: 1px solid black;
-        padding: 10px;
-        word-wrap: break-word;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 2em;
     }
 
-    .strikeThrough { 
+    .inner {
+      width: 45%;
+      border: 1px solid black;
+      padding: 10px;
+      word-wrap: break-word;
+    }
+
+    .strikeThrough {
       text-decoration: line-through;
     }
 
@@ -30,6 +34,7 @@
     }
   </style>
 </head>
+
 <body>
   <script type="module" src="/index.js"></script>
   <div>
@@ -39,51 +44,65 @@
 
   <div id="createBribeInputs" class="inner">
     <div>
-        <label>contractAddress: 
-            <input type="text" value="0xb2f3FF53f5C4CEd87e6C44F8b5A7B16E80df21d5"  id="contractAddress"/>
-        </label>
-        
+      <label>contractAddress:
+        <input type="text" value="0xc54bcaf528e27cce58791df374af45c6757905a8" id="contractAddress" />
+      </label>
+
     </div>
     <label>add selector:
       <select name="functionSelectors" id="functionSelectors">
-        <option value="">--Please choose an option--</option>
+        <option value="">--select to add--</option>
       </select>
-
     </label>
 
 
-
-    <label>function Selectors: 
-        <input type="text" value='[]' id="funcSelectorsTextInput"/>
-    </label>
-
     <div>
-        <label>rewardTokenAddress: 
-            <input type="text" value="0x6c6FedEEc912Fa9aD39A0aF67e8EC03f34d519B6" id="rewardTokenAddress"/>
-        </label>
-        
-    </div>
-    <div>
-
-    <label>rewardPerCall: 
-        <input type="text" value="1" id="rewardPerCall"/>
-    </label>
-        
+      <label>function Selectors:
+        <input type="text" value='[]' id="funcSelectorsTextInput" />
+      </label>
     </div>
 
     <div>
+      <label>rewardTokenAddress:
+        <input type="text" value="0x6c6FedEEc912Fa9aD39A0aF67e8EC03f34d519B6" id="rewardTokenAddress" />
+      </label>
 
-    <button id="deployButton">deploy</button>
-        
+    </div>
+    <div>
+
+      <label>rewardPerCall:
+        <input type="text" value="1" id="rewardPerCall" />
+      </label>
+
+    </div>
+
+    <div>
+
+      <button id="deployButton">deploy</button>
+
     </div>
 
 
-    
+
+
+  </div>
+  
+  <div id="deployedBribes" class="outer">
+    <div>
+      Deployed bribes
+      <br>
+      <ul id="deployedBribesList">
+  
+      </ul>
+
+    </div>
+
+
 
   </div>
 
 
 
-
 </body>
+
 </html>

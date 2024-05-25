@@ -1,8 +1,9 @@
 import {ethers} from 'ethers'
+window.ethers =ethers
 
 import {default as AntiCensorShipBriberFoundryData} from "../out/AntiCensorShipBriberFactory.sol/AntiCensorShipBriberFactory.json"
 const AntiCensorShipBriberFactoryAbi = AntiCensorShipBriberFoundryData.abi
-const AntiCensorShipBriberFactoryAddress = "0x9b147f9889308a1F98E5621EfAD12fB2d85cb1eE"
+const AntiCensorShipBriberFactoryAddress = "0x9e62b1fff8c312c3ec02264f6936ad5ab3a73516"
 
 import {default as DepositContractMockFoundryData} from "../out/DepositContractMock.sol/DepositContractMock.json"
 const DepositContractMockAbi = DepositContractMockFoundryData.abi
@@ -36,6 +37,7 @@ async function getSigner(provider) {
     function getFunctionSelectors(abi) {
       const iface = new ethers.Interface(abi)
       const selectors = {}
+
       for (const item of abi) {
         if (item.type === "function") {
           selectors[item.name] = iface.getFunction(item.name).selector
@@ -59,7 +61,6 @@ async function getSigner(provider) {
       AntiCensorShipBriberFactoryAbi, 
       signer.provider
     );
-    console.log(AntiCensorShipBriberContract)
     const AntiCensorShipBriberContractSigner = AntiCensorShipBriberContract.connect(signer)
 
   
@@ -83,11 +84,17 @@ async function getSigner(provider) {
     const rewardPerCall =  Number(document.getElementById("rewardPerCall").value)
 
 
-    console.log(contractAddress, funcSelectors, rewardTokenAddress, rewardPerCall )
 
     const tx = await AntiCensorShipBriberContractSigner.createBribe(contractAddress, funcSelectors, rewardTokenAddress,rewardPerCall)
     console.log(tx)
     console.log(await tx.wait(1))
+    const confirmerdTx= await tx.wait(1)
+    const deployedAddressBytes =  confirmerdTx.logs[1].data
+    const deployedAddress = ethers.getAddress("0x"+deployedAddressBytes.slice(26))
+
+    localStorage.setItem(deployedAddress, JSON.stringify({contractAddress, funcSelectors, rewardTokenAddress, rewardPerCall}) )
+    listDeployments()
+
 
 
 
@@ -95,14 +102,13 @@ async function getSigner(provider) {
 
   async function getAbi(contractAddress) {
     //TODO make configurable sepolia/mainnet
-    console.log(`https://api-sepolia.etherscan.io/api?module=contract&action=getabi&address=${contractAddress}&apikey=ZEMX5KWUEYW5UAYAAGEWY2EY5YX3YXPJZS`)
     const r = await fetch(`https://api-sepolia.etherscan.io/api?module=contract&action=getabi&address=${contractAddress}&apikey=ZEMX5KWUEYW5UAYAAGEWY2EY5YX3YXPJZS`)
     const rjson = await r.json()
-    console.log(rjson)
     const abi = rjson.result
-    console.log(abi)
+
     if (abi !== 'Contract source code not verified') {
       console.log(JSON.parse(abi))
+      return JSON.parse(abi)
     } else {
       console.warn('Contract source code not verified. using hardcoded abi')
       return DepositContractMockAbi
@@ -133,15 +139,38 @@ async function getSigner(provider) {
   function functionSelectorsSelectorHandler() {
     const funcSelectorsTextInput = document.getElementById("funcSelectorsTextInput")
     const currentSelectors = JSON.parse(funcSelectorsTextInput.value)
-    console.log(currentSelectors)
+
     const functionSelectorsSelector = document.getElementById("functionSelectors")
     currentSelectors.push(functionSelectorsSelector.value)
     funcSelectorsTextInput.value = JSON.stringify(currentSelectors)
     functionSelectorsSelector.value = ""
      
   }
+  
+  function listDeployments() {
+    const deployedBribesList = document.getElementById("deployedBribesList")
+    deployedBribesList.innerHTML = ""
+    console.log(localStorage)
 
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
 
+      const item = document.createElement("li")
+      const a = document.createElement("a")
+      a.href = `https://sepolia.etherscan.io/address/${key}`
+      a.innerText = key
+      const div = document.createElement("div")
+      console.log(key)
+      const {contractAddress, funcSelectors, rewardTokenAddress, rewardPerCall} = JSON.parse(localStorage.getItem(key))
+      div.innerText = `target contract: ${contractAddress}, reward token: ${rewardTokenAddress}, rewards per call ${rewardPerCall}`
+
+      item.append(a, div)
+      deployedBribesList.append(item)
+    }
+   
+    
+
+  }
 
   function setEventListeners() {
     const connectWalletBtn = document.getElementById("connectWalletBtn")
@@ -160,6 +189,7 @@ async function getSigner(provider) {
 
   async function main() {
     setEventListeners()
+    listDeployments()
     // await refreshUiValues()
   
   

@@ -23,7 +23,7 @@ forge create --rpc-url <your_rpc_url> \
     --private-key "YOURPRIVATEKEY" \
     --etherscan-api-key "YOURINFURAKEY" \
     --verify \
-    contracts/AntiCensorShipBriber.sol:AntiCensorShipBriber
+    contracts/AntiCensorShipBriberFactory.sol:AntiCensorShipBriberFactory
 ```
 
 ```
@@ -31,7 +31,7 @@ forge create --rpc-url https://sepolia.infura.io/v3/2LPfLOYBTHSHfLWYSv8xib2Y7OA 
     --private-key "YOURPRIVATEKEY"\
     --etherscan-api-key "YOURINFURAKEY" \
     --verify \
-    contracts/AntiCensorShipBriber.sol:AntiCensorShipBriber
+    contracts/AntiCensorShipBriberFactory.sol:AntiCensorShipBriberFactory
 ```
 
 ```
