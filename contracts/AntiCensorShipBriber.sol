@@ -19,12 +19,17 @@ contract AntiCensorShipBriber is Initializable {
     mapping(bytes32 => PendingCalldata ) public pendingCallDataStorage;
     mapping (bytes32 => bool) pendingCallDataBools;
 
+    address public rewardToken;
+    uint256 public rewardPerCall;
+
     //TODO gasgolf tightpacking
     mapping(bytes4 => bool) public eligibleFuncSelectors;
 
     //TODO also register manditory arguments
-    function initialize(address _contractAddress, bytes4[] calldata _funcSelectors) public initializer {
+    function initialize(address _contractAddress, bytes4[] calldata _funcSelectors, address _rewardToken, uint256 _rewardPerCall) public initializer {
         censoredContractAddress = _contractAddress;
+        rewardToken = _rewardToken;
+        rewardPerCall = _rewardPerCall;
 
         for (uint256 index = 0; index < _funcSelectors.length; index++) {
             eligibleFuncSelectors[_funcSelectors[index]] = true;
@@ -68,6 +73,6 @@ contract AntiCensorShipBriber is Initializable {
     }
 
     function _sendReward(address receiptient) private {
-
+        IERC20(rewardToken).transfer(receiptient, rewardPerCall);
     }
 }
