@@ -37,8 +37,6 @@ contract AntiCensorShipBriber is IAntiCensorShipBriber, Initializable {
         //check contract and function selector
         require(eligibleFuncSelectors[bytes4(_funcCalldata[:4])], "function in call data is not eligible");
 
-    
-
         // create unique identifier for calldata
         bytes32 pendingCallDataHash = keccak256(abi.encodePacked(_funcCalldata, msg.value, gasLimit, salt));
         
@@ -50,15 +48,12 @@ contract AntiCensorShipBriber is IAntiCensorShipBriber, Initializable {
         pendingCallDataBools[pendingCallDataHash] = true;
     }
 
-
-
-
     function sweepReward(bytes32 pendingCallDataHash) override public {
         require(pendingCallDataBools[pendingCallDataHash]);
         pendingCallDataBools[pendingCallDataHash] = false;
         PendingCalldata memory pendingCallData = pendingCallDataStorage[pendingCallDataHash];
 
-        (bool succes, bytes memory returnData) = address(censoredContractAddress).call{
+        (bool succes,) = address(censoredContractAddress).call{
             gas: pendingCallData.gasLimit, value: pendingCallData.value
             } (pendingCallData.funcCalldata);
         require(succes);
