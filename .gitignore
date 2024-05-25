@@ -1,3 +1,4 @@
 node_modules/
 out/
-cache/
+cache/*
+cache/solidity-files-cache.json
