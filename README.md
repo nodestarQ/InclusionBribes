@@ -16,3 +16,11 @@ ABIs are stored in d573b16.js
 `yarn install`
 `forge build`
 `yarn deploy`
+
+```
+forge create contracts/AntiCensorShipBriberFactory.sol:AntiCensorShipBriberFactory \
+--rpc-url https://sepolia.infura.io/v3/YOURINFURAKEY \
+--private-key YOURRPIVATEKEY \
+--etherscan-api-key "YOURAPIKEY" \
+--verify
+```

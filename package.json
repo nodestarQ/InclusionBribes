@@ -1,14 +1,17 @@
 {
   "dependencies": {
-    "ethers": "^6.12.1"
+    "ethers": "^6.12.1",
+    "vite": "^5.2.11"
   },
   "type": "module",
   "config": {
-    "rpcurl": "http://127.0.0.1:8555",
-    "chainId":"31337",
-    "privateKey": "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+    "rpcurl": "https://sepolia.infura.io/v3/YOURINFURAKEY",
+    "chainId": "11155111",
+    "deployBribesUiPort": 8080
   },
   "scripts": {
-    "deploy": "forge create --rpc-url $npm_package_config_rpcurl --private-key $npm_package_config_privateKey contracts/AntiCensorShipBriber.sol:AntiCensorShipBriber"
+
+    "deployBribesUi": "vite --port $npm_package_config_deployBribesUiPort",
+    "dev": "vite deployBribesUI"
   }
 }
