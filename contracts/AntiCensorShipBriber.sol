@@ -1,20 +1,73 @@
 // SPDX-License-Identifier: MIT
-// Compatible with OpenZeppelin Contracts ^5.0.0
+
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import {IERC20, SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+
 pragma solidity ^0.8.26;
 
+struct PendingCalldata {
+    bytes funcCalldata;
+    uint256 value;
+    uint32 gasLimit;
+    bytes32 salt;
+}
 
-contract AntiCensorShipBriber {
+contract AntiCensorShipBriber is Initializable {
 
+    address public  censoredContractAddress;
 
-    function createHoneyPot(address contractAddress ) public {
+    mapping(bytes32 => PendingCalldata ) public pendingCallDataStorage;
+    mapping (bytes32 => bool) pendingCallDataBools;
+
+    //TODO gasgolf tightpacking
+    mapping(bytes4 => bool) public eligibleFuncSelectors;
+
+    //TODO also register manditory arguments
+    function initialize(address _contractAddress, bytes4[] calldata _funcSelectors) public initializer {
+        censoredContractAddress = _contractAddress;
+
+        for (uint256 index = 0; index < _funcSelectors.length; index++) {
+            eligibleFuncSelectors[_funcSelectors[index]] = true;
+        }
+    }
+
+    //TODO check gaslimit data type
+    //TODO can salt be smaller
+    function callFunction(bytes calldata _funcCalldata, uint32 gasLimit, bytes32 salt ) public payable {
+        //check contract and function selector
+        require(eligibleFuncSelectors[bytes4(_funcCalldata[:4])], "function in call data is not eligible");
+
+    
+
+        // create unique identifier for calldata
+        bytes32 pendingCallDataHash = keccak256(abi.encodePacked(_funcCalldata, msg.value, gasLimit, salt));
         
+        //TODO maybe remove pendingCallDataStorage to save gas
+
+        //store calldata
+        PendingCalldata memory pendingCalldata = PendingCalldata(_funcCalldata, msg.value, gasLimit, salt );
+        pendingCallDataStorage[pendingCallDataHash] = pendingCalldata;
+        pendingCallDataBools[pendingCallDataHash] = true;
     }
 
-    function callFunction(address contractAddress, bytes calldata funcCalldata) public payable  returns (bool, bytes memory) {
-        //TODO 
-        (bool succes, bytes memory returnData) = address(contractAddress).call{gas: 500000000000000000} (funcCalldata);
-        return (succes, returnData);
-        //require(succes, "call failed :(");
+
+
+
+    function sweepReward(bytes32 pendingCallDataHash) public {
+        require(pendingCallDataBools[pendingCallDataHash]);
+        pendingCallDataBools[pendingCallDataHash] = false;
+        PendingCalldata memory pendingCallData = pendingCallDataStorage[pendingCallDataHash];
+
+        (bool succes, bytes memory returnData) = address(censoredContractAddress).call{
+            gas: pendingCallData.gasLimit, value: pendingCallData.value
+            } (pendingCallData.funcCalldata);
+        require(succes);
+
+        _sendReward(msg.sender);
+
     }
 
+    function _sendReward(address receiptient) private {
+
+    }
 }

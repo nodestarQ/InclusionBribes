@@ -11,3 +11,6 @@ console.log(ifaceTornadoCash.getFunction("deposit").selector)
 const ifaceDepositContractMock = new ethers.Interface(DepositContractMock["abi"])
 console.log(ifaceDepositContractMock.getFunction("deposit").selector)
 console.log(ifaceDepositContractMock.encodeFunctionData("deposit", [ "message1", "message2" ]))
+
+console.log(ethers.hexlify(crypto.getRandomValues(new Uint8Array(new Array(32)))))
+
