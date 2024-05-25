@@ -26,6 +26,6 @@ contract AntiCensorShipBriberFactory is IAntiCensorShipBriberFactory {
             _rewardToken,
             _rewardPerCall
         );
-        emit CreatBribe(deployerAddress, _contractAddress);
+        emit CreatBribe(deployerAddress, address(instance));
     }
 }
