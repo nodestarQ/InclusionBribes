@@ -1,47 +1,59 @@
-## How to use
+# Tornado Cash Classic UI
 
-Step 1. Clone repository
+> UI for non-custodial Ethereum Privacy solution
+
+## Building locally
+
+- Install [Node.js](https://nodejs.org) version 14
+  - If you are using [nvm](https://github.com/creationix/nvm#installation) (recommended) running `nvm use` will automatically choose the right node version for you.
+- Install [Yarn](https://yarnpkg.com/en/docs/install)
+- Install dependencies: `yarn`
+- Copy the `.env.example` file to `.env`
+  - Replace environment variables with your own personal.
+- Build the project to the `./dist/` folder with `yarn generate`.
+
+## Development builds
+
+To start a development build (e.g. with logging and file watching) run `yarn dev`.
+
+## Deploy on IPFS
+
+- Make sure you set `PINATA_API_KEY` and `PINATA_SECRET_API_KEY` environment variables in `.env`
+- To deploy a production build run `yarn deploy-ipfs`.
+
+## Architecture
+
+For detailed explanation on how things work, checkout [Nuxt.js docs](https://nuxtjs.org).
+
+## Audit
+
+[TornadoCash_Classic_dApp_audit_Decurity.pdf](https://tornado.cash/audits/TornadoCash_Classic_dApp_audit_Decurity.pdf)
+
+## Update cached files
+
+- For update deposits and withdrawals events use `yarn update:events {chainId}`
+- For update encrypted notes use `yarn update:encrypted {chainId}`
+- For update merkle tree use `yarn update:tree {chainId}`
+
+#### NOTE!
+
+After update cached files do not forget to use `yarn update:zip`
+
+### Example for Ethereum Mainnet:
+
 ```
-git clone https://github.com/tornadocash/ui-minified.git
-cd ui-minified
+yarn update:events 1
+yarn update:encrypted 1
+yarn update:tree 1
+
+yarn update:zip
 ```
-Step 2. Serve the folder with your favorite http server
+
+### Example for Binance Smart Chain:
+
 ```
-python3 -m http.server 8080
-```
-Or use any other http web server, such as https://www.npmjs.com/package/http-server
+yarn update:events 56
+yarn update:encrypted 56
 
-Step 3. Open your web browser at http://localhost:8080
-
-## Running a TOR service
-
-If you wish to serve tornado cash UI on an .onion domain, there is an easy way to do it using docker-compose. Paste the following into `docker-compose.yml` and run `docker-compose up -d`
-
-```yaml
-version: '2'
-
-services:
-  tornado_ui:
-    image: tornadocash/ui
-    restart: always
-    container_name: tornado_ui
-  watchtower:
-    image: v2tec/watchtower
-    restart: always
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: --interval 60 tornado_ui
-  tor:
-    image: strm/tor
-    restart: always
-    depends_on: [ tornado_ui ]
-    environment:
-      LISTEN_PORT: 80
-      REDIRECT: tornado_ui:80
-      # Generate a new key with
-      # docker run --rm --entrypoint shallot strm/tor-hiddenservice-nginx ^torn
-      PRIVATE_KEY: |
-        -----BEGIN RSA PRIVATE KEY-----
-        ...
-        -----END RSA PRIVATE KEY-----
+yarn update:zip
 ```
