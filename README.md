@@ -11,6 +11,7 @@ forge build;
 ```
 
 ### run reward sweeper
+0xa5e74A8Be391F67B108F0aE945f720E49DF74F59 is the deployed bribe pool from the factory. Replace with your own when you deploy a new bribe
 ```
 node scripts/rewardSweeper.js YOUR_PRIVATE_KEY https://sepolia.infura.io/v3/YOUR_INFURA_KEY 0xa5e74A8Be391F67B108F0aE945f720E49DF74F59
 ```
