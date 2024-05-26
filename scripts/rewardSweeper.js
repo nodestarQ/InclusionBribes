@@ -28,9 +28,10 @@ if (process.argv.length < 5) {
             const tx = await provider.getTransaction(txHash);
             if (tx.to === ethers.getAddress(INCLUSION_BRIBE_CONTRACT)) {
 
-                const txArgs = (abicoder.decode(['bytes', 'uint32', 'bytes32',], ethers.dataSlice(tx.data, 4))).toArray()
+                const txArgs = (abicoder.decode(['bytes', 'uint32', 'bytes32'], ethers.dataSlice(tx.data, 4))).toArray()
                 const hash = ethers.solidityPackedKeccak256(["bytes", "uint256", "uint32", "bytes32"], [txArgs[0], tx.value, txArgs[1], txArgs[2]])
 
+                console.log({hash, hashArgs:[txArgs[0], tx.value, txArgs[1], txArgs[2]]})
                 const sweepTx = await inclusionBribeContractObj.sweepReward(hash)
                 console.log(`submitted sweeping tx: ${sweepTx.hash}`)
             }
@@ -39,7 +40,7 @@ if (process.argv.length < 5) {
 
         //is shorter then block time but better be safe and be sure to get the tx
         //await execSync('sleep 5000');
-        await delay(5000)
+        await delay(2000)
     }
 }
 
