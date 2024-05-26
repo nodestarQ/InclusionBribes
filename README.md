@@ -1,46 +1,24 @@
-# antiCensorshipBribes
+# InclusionBribes
 ETHBerlin Hackathon 2024 entry
 
+We worked on a solution to incentivize block producers to include transactions from censored or sanctioned smart contracts. 
+This is what we came up with during the ETHBerlin04 Hackathon
 
-# run sepolia
-### install
-```
-foundryup;
-yarn install;
-forge build;
-```
+# Prerequisites
+you will need: 
+0. [Github](https://git-scm.com/downloads)
+1. [Node.Js](https://nodejs.org/en/download/package-manager)
+2. [Foundry](https://book.getfoundry.sh/getting-started/installation)
+3. [yarn](https://yarnpkg.com/)/[pnpm](https://yarnpkg.com/)
+5. [metamask](https://www.alchemy.com/faucets/ethereum-sepolia)
+6. finally some [Sepolia ETH](https://www.alchemy.com/faucets/ethereum-sepolia)
 
-### run reward sweeper
-0xa5e74A8Be391F67B108F0aE945f720E49DF74F59 is the deployed bribe pool from the factory. Replace with your own when you deploy a new bribe
-```
-node scripts/rewardSweeper.js YOUR_PRIVATE_KEY https://sepolia.infura.io/v3/YOUR_INFURA_KEY 0xa5e74A8Be391F67B108F0aE945f720E49DF74F59
-```
+# Installationd
++ You need to ```git clone https://github.com/nodestarQ/antiCensorshipBribes.git``` and ```cd``` into the root folder.
++ Go ahead and do a ```yarn install:all``` this will install all the necessary dependencies.
++ The ```AntiCensorshipBriberFactory``` and ```TwisterMonies``` Smart Contract (that stands in as a placeholder for censored contracts) have been deployed on the Ethereum Sepolia Testnet.
 
-### run ui to create bribe
-```
-yarn dev
-```
-
-# deploy
-#### deploy factory
-```
-forge create --rpc-url <your_rpc_url> \
-    --private-key "YOURPRIVATEKEY" \
-    --etherscan-api-key "YOURINFURAKEY" \
-    --verify \
-    contracts/AntiCensorShipBriberFactory.sol:AntiCensorShipBriberFactory
-```
-#### deploy reward token
-```
-forge create --rpc-url https://sepolia.infura.io/v3/2LPfLOYBTHSHfLWYSv8xib2Y7OA \
-    --private-key "YOURPRIVATEKEY" \
-    --etherscan-api-key "YOURINFURAKEY" \
-    --verify \
-    contracts/test/RewardToken.sol:RewardToken
-```
-
-
-# test
-```
-forge test
-```
+# Run it
++ Before we run any other command we need to open a separate cli window and start the sweeper script, which is to simulate MEVs. To do this run ```yarn run:sweep``` in the newly opened window.
++  ```yarn run:twister``` is going to serve the frontend for our mock censored smart contract. Connect with the website through MetaMask, Select an amount to deposit and press on the ```Deposit``` button. 
++ Once the transaction gets confirmed it will be picked up by the ```sweeper```, which will claim the rewards and include the block.
