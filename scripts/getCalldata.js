@@ -20,7 +20,6 @@ console.log(
 `calldata: 
 ${ifaceTornadoCash.encodeFunctionData("deposit", [_tornado , _commitment,  _encryptedNote])}`
 )
-
 //salt
 console.log(
 `salt: 
@@ -28,5 +27,12 @@ ${ethers.hexlify(crypto.getRandomValues(new Uint8Array(new Array(32))))}`
 )
 
 
+const funcCallData = "0xe2c41dbc"
+const value = BigInt(10000000000)
+const gasLimit = BigInt(200000)
+const salt = "0x2c6745395fe743cfc228e3da309939380f52628a3355a312767be06ab7a77b65"
+const abiCoder = new ethers.AbiCoder()
+const hash = ethers.solidityPackedKeccak256(["bytes","uint256", "uint32", "bytes32"], [ethers.toBeArray(funcCallData),value, gasLimit, ethers.toBeArray(salt)])
+console.log(hash)
 
 
