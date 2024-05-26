@@ -1,6 +1,7 @@
 import {ethers} from 'ethers'
 window.ethers =ethers
 
+
 import {default as AntiCensorShipBriberFoundryData} from "../out/AntiCensorShipBriberFactory.sol/AntiCensorShipBriberFactory.json"
 const AntiCensorShipBriberFactoryAbi = AntiCensorShipBriberFoundryData.abi
 const AntiCensorShipBriberFactoryAddress = "0x9e62b1fff8c312c3ec02264f6936ad5ab3a73516"
@@ -9,6 +10,8 @@ import {default as DepositContractMockFoundryData} from "../out/DepositContractM
 const DepositContractMockAbi = DepositContractMockFoundryData.abi
 console.log(getFunctionSelectors(DepositContractMockAbi))
 
+
+import {default as erc20abi} from "./scripts/erc20abi.json";
 
 /**
  * 
@@ -75,6 +78,17 @@ async function getSigner(provider) {
   async function connectWalletHandler() {
     await connectWallet()
   }
+
+  function getErc20ContactObj(contractAddress) {
+    const contractObj = new ethers.Contract(
+      contractAddress,
+      erc20abi, 
+      signer.provider
+    );
+    return contractObj
+  }
+  window.getErc20ContactObj = getErc20ContactObj
+  window.connectWallet = connectWallet
 
   async function deployButtonHandler() {
     const {signer, provider, AntiCensorShipBriberContractSigner} = await connectWallet()
@@ -146,6 +160,15 @@ async function getSigner(provider) {
     functionSelectorsSelector.value = ""
      
   }
+
+  async function sendTokenHandler(amount, rewardTokenAddress, destination) {
+    const {signer, provider, AntiCensorShipBriberContractSigner} = await connectWallet()
+    const tokencontract = getErc20ContactObj(rewardTokenAddress)
+    const tokencontractSigner = tokencontract.connect(signer)
+    const tx = tokencontractSigner.transfer(destination, amount)
+    return await tx.wait(1)
+  
+  }
   
   function listDeployments() {
     const deployedBribesList = document.getElementById("deployedBribesList")
@@ -162,9 +185,15 @@ async function getSigner(provider) {
       const div = document.createElement("div")
       console.log(key)
       const {contractAddress, funcSelectors, rewardTokenAddress, rewardPerCall} = JSON.parse(localStorage.getItem(key))
-      div.innerText = `target contract: ${contractAddress}, reward token: ${rewardTokenAddress}, rewards per call ${rewardPerCall}`
+      const currentBalance = 0 //TODO
+      div.innerText = `target contract: ${contractAddress}, reward token: ${rewardTokenAddress}, rewards per call ${rewardPerCall}, current balance ${currentBalance}`
 
-      item.append(a, div)
+      const inputAmountTokens = document.createElement("input")
+      inputAmountTokens.type = "number"
+      const addRewardTokensButton = document.createElement("button")
+      addRewardTokensButton.onclick = ()=>sendTokenHandler(inputAmountTokens.value,rewardTokenAddress,key) //console.log("send ", rewardTokenAddress, " to ", key, " amount ", inputAmountTokens.value)
+      addRewardTokensButton.innerText = "send tokens"
+      item.append(a, div, inputAmountTokens,addRewardTokensButton )
       deployedBribesList.append(item)
     }
    
