@@ -18,7 +18,6 @@ contract AntiCensorShipBriberFactory is IAntiCensorShipBriberFactory {
         uint256 _rewardPerCall
     ) public override {
         address deployerAddress = msg.sender;
-
         address instance = Clones.clone(implementation);
         AntiCensorShipBriber(instance).initialize(
             _contractAddress,

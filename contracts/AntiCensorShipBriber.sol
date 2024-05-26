@@ -9,7 +9,7 @@ import {IAntiCensorShipBriber, PendingCalldata } from "./interfaces/IAntiCensorS
 
 contract AntiCensorShipBriber is IAntiCensorShipBriber, Initializable {
 
-    address public  censoredContractAddress;
+    address public censoredContractAddress;
 
     mapping(bytes32 => PendingCalldata ) public pendingCallDataStorage;
     mapping (bytes32 => bool) pendingCallDataBools;
@@ -30,8 +30,9 @@ contract AntiCensorShipBriber is IAntiCensorShipBriber, Initializable {
             eligibleFuncSelectors[_funcSelectors[index]] = true;
         }
     }
-
+    
     //TODO check gaslimit data type
+
     //TODO can salt be smaller
     function callFunction(bytes calldata _funcCalldata, uint32 gasLimit, bytes32 salt ) override public payable {
         //check contract and function selector
@@ -42,7 +43,7 @@ contract AntiCensorShipBriber is IAntiCensorShipBriber, Initializable {
         
         //TODO maybe remove pendingCallDataStorage to save gas
 
-        //store calldata
+        //calldata storage
         PendingCalldata memory pendingCalldata = PendingCalldata(_funcCalldata, msg.value, gasLimit, salt );
         pendingCallDataStorage[pendingCallDataHash] = pendingCalldata;
         pendingCallDataBools[pendingCallDataHash] = true;
